@@ -73,6 +73,9 @@ ignore = [
 "tests/*.py" = [
   "F841",  # unused variables
 ]
+"cli_anything/cloudmusic/**/*.py" = [
+  # Windows-specific imports that may not be available on all platforms
+]
 
 [tool.ruff.format]
 exclude = [
@@ -85,9 +88,14 @@ python_version = "3.8"
 strict = false
 show_error_codes = true
 ignore_missing_imports = true
+follow_imports = silent
+allow_untyped_defs = true
 exclude = [
-  "win32.*",
+  "win32",
   "pythonwin",
+  "\\.pyc$",
+  "__pycache__",
+  ".*\\.egg-info",
 ]
 
 [tool.pytest.ini_options]
