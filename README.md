@@ -1,5 +1,9 @@
 # CLI-Anything CloudMusic
 
+[![CI](https://github.com/XiangCao1998/cli-anything-cloudmusic/actions/workflows/ci.yml/badge.svg)](https://github.com/XiangCao1998/cli-anything-cloudmusic/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/cli-anything-cloudmusic.svg)](https://pypi.org/project/cli-anything-cloudmusic/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 Command-line interface for **NetEase CloudMusic (网易云音乐)** on Windows.
 
 Control your music player from the command line or let AI agents control it.

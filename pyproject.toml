@@ -1,0 +1,90 @@
+[project]
+name = "cli-anything-cloudmusic"
+version = "0.1.0"
+authors = [
+  { name = "CLI-Anything" },
+]
+description = "CLI interface for NetEase CloudMusic (网易云音乐)"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+keywords = ["cli", "cli-anything", "netease", "cloudmusic", "music", "player"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows",
+  "Topic :: Multimedia :: Sound/Audio",
+]
+dependencies = [
+  "click>=8.0",
+  "pywin32>=300",
+  "psutil>=5.8",
+  "prompt_toolkit>=3.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/XiangCao1998/cli-anything-cloudmusic"
+Repository = "https://github.com/XiangCao1998/cli-anything-cloudmusic"
+
+[project.scripts]
+cli-anything-cloudmusic = "cli_anything.cloudmusic.cloudmusic_cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["cli_anything.cloudmusic", "cli_anything.cloudmusic.core", "cli_anything.cloudmusic.utils", "cli_anything.cloudmusic.tests"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"cli_anything.cloudmusic" = ["skills/SKILL.md"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort
+  "B",   # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "UP",  # pyupgrade
+]
+ignore = [
+  "E501",  # line too long (handled by formatter)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = [
+  "F841",  # unused variables
+]
+
+[tool.ruff.format]
+exclude = [
+  "__pycache__",
+  "*.pyc",
+]
+
+[tool.mypy]
+python_version = "3.8"
+strict = false
+show_error_codes = true
+ignore_missing_imports = true
+exclude = [
+  "win32.*",
+  "pythonwin",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["cli_anything/cloudmusic/tests"]
+pythonpath = ["."]
+addopts = "-v"

@@ -19,6 +19,10 @@ htmlcov/
 .tox/
 .nox/
 
+# Modern Python packaging
+*.whl
+*.tar.gz
+
 # IDE
 .vscode/
 .idea/
@@ -32,3 +36,23 @@ Thumbs.db
 
 # WSL temp
 *.tmp
+
+# pre-commit
+.pre-commit-cache/
+
+# Environment
+venv/
+env/
+.venv/
+.env/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Ruff
+.ruff_cache/
+
+# Pyright
+pyrightconfig.json
