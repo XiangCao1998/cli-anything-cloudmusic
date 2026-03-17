@@ -17,6 +17,9 @@ class PlaybackController:
     def play(self) -> bool:
         """Start or resume playback.
 
+        **Known limitation:** Since we can't get current playback state from CloudMusic,
+        this just sends a play/pause toggle. If it's already playing, this will pause it.
+
         Returns:
             True if command sent successfully, False if app not running.
         """
@@ -28,6 +31,9 @@ class PlaybackController:
 
     def pause(self) -> bool:
         """Pause current playback.
+
+        **Known limitation:** Since we can't get current playback state from CloudMusic,
+        this just sends a play/pause toggle. If it's already paused, this will resume it.
 
         Returns:
             True if command sent successfully, False if app not running.

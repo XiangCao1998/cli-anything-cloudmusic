@@ -63,8 +63,13 @@ class VolumeController:
     def set(self, percentage: int) -> bool:
         """Set volume to specific percentage (0-100).
 
-        Works by muting (go to 0) then sending volume up N times.
-        Each step increases volume by ~4% so this gets close to the target.
+        Works by muting (goes to 0) then sending volume up N times.
+        Each step increases volume by ~4% on Windows system volume so this gets close to the target.
+
+        **Known limitation:** Since we can't query the current volume/mute state,
+        this method always toggles mute first. This means:
+        - If system was not muted, it becomes muted then stepped up to target
+        - If system was muted, it becomes unmuted then stepped up to target
 
         Args:
             percentage: Desired volume percentage 0-100
@@ -85,7 +90,11 @@ class VolumeController:
             return True
 
         # Each step is ~4%, calculate steps needed
+        # Windows increases volume by approximately 4% per volume up key press
         steps = int(percentage // 4)
+        # Ensure at least 1 step for 1-3%
+        if percentage > 0 and steps == 0:
+            steps = 1
 
         # Send volume up steps
         for _ in range(steps):

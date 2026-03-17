@@ -1,6 +1,4 @@
 """Window detector for parsing track information from NetEase CloudMusic window title.
-
-NetEase it sees ya, just kidding, it's my name.
 """
 
 import re

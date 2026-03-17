@@ -7,6 +7,7 @@ Windows API messages and media key simulation.
 import ctypes
 import subprocess
 import os
+import time
 from typing import Optional, Tuple
 
 import psutil
@@ -271,13 +272,27 @@ class CloudMusicBackend:
             True if saved successfully, False otherwise.
         """
         try:
-            config_dir = os.path.dirname(self.CONFIG_PATH)
-            if not os.path.exists(config_dir):
-                os.makedirs(config_dir, exist_ok=True)
-            with open(self.CONFIG_PATH, 'w') as f:
-                f.write(path)
-            self._exe_path = path
-            return True
+            # Validate path exists before saving
+            if os.path.exists(path):
+                config_dir = os.path.dirname(self.CONFIG_PATH)
+                if not os.path.exists(config_dir):
+                    os.makedirs(config_dir, exist_ok=True)
+                with open(self.CONFIG_PATH, 'w') as f:
+                    f.write(path)
+                self._exe_path = path
+                return True
+            # Try WSL conversion
+            if len(path) >= 2 and path[1] == ":":
+                wsl_path = self._windows_to_wsl(path)
+                if os.path.exists(wsl_path):
+                    config_dir = os.path.dirname(self.CONFIG_PATH)
+                    if not os.path.exists(config_dir):
+                        os.makedirs(config_dir, exist_ok=True)
+                    with open(self.CONFIG_PATH, 'w') as f:
+                        f.write(wsl_path)
+                    self._exe_path = wsl_path
+                    return True
+            return False
         except Exception:
             return False
 
@@ -345,15 +360,32 @@ class CloudMusicBackend:
         Returns:
             Window handle (HWND) as int, or None if not found.
         """
-        # Look for window with title containing "CloudMusic"
-        # We can't rely on class name alone since it's Electron
-        hwnd = user32.FindWindowW(None, None)
-        # We'll need to enumerate windows, but for simplicity just check title
-        # For now, just check if process is running - actual title check in window_detector
-        if self.is_running():
-            # Return non-zero if running, actual detection needs more work
-            return 1
-        return None
+        # Enumerate all visible windows to find one with "CloudMusic" in title
+        # We can't rely on class name alone since it's an Electron app
+        try:
+            found_hwnd = []
+
+            def enum_callback(hwnd, lParam):
+                if user32.IsWindowVisible(hwnd):
+                    length = user32.GetWindowTextLengthW(hwnd)
+                    if length > 0:
+                        buffer = ctypes.create_unicode_buffer(length + 1)
+                        user32.GetWindowTextW(hwnd, buffer, length + 1)
+                        title = buffer.value
+                        if title and "CloudMusic" in title:
+                            found_hwnd.append(hwnd)
+                return 1
+
+            WNDENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p)
+            callback = WNDENUMPROC(enum_callback)
+            user32.EnumWindows(callback, None)
+
+            if found_hwnd:
+                # Return first visible CloudMusic window
+                return int(found_hwnd[0])
+            return None
+        except Exception:
+            return None
 
     def get_exe_path(self) -> Optional[str]:
         """Get the configured or detected executable path."""
@@ -468,7 +500,6 @@ class CloudMusicBackend:
         adding the current song to "My Favorites".
         """
         # Send Ctrl+S using SendInput with modifier
-        import time
         extra = ctypes.c_ulong(0)
 
         # VK_CONTROL = 0x11, VK_S = 0x53
