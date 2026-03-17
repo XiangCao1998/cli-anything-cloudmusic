@@ -197,6 +197,23 @@ def previous_track(ctx):
         print_result({"success": True}, json_output)
 
 
+@main.command(name="like")
+@click.pass_context
+def like(ctx):
+    """Like/favorite the current track (toggles favorite state).
+
+    Uses the default NetEase CloudMusic shortcut Ctrl+S.
+    """
+    playback = ctx.obj["playback"]
+    json_output = ctx.obj["json_output"]
+
+    success = playback.like()
+    if not success:
+        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+    else:
+        print_result({"success": True, "message": "Like shortcut sent (toggled favorite state)"}, json_output)
+
+
 @main.command(name="volume")
 @click.argument("action", required=False, type=click.Choice(["set", "up", "down"]))
 @click.argument("value", required=False, type=int)
@@ -232,11 +249,11 @@ def volume(ctx, action, value):
         success = volume_ctrl.down(delta)
         print_result({"success": success, "message": f"Decreased volume by {delta}"}, json_output)
     elif action == "set":
-        # Setting specific volume requires multiple steps
-        # We can't get current level, so just approximate from 0
-        current_steps = value // 4  # Each step is ~4%
-        # Currently not implemented - just use up/down
-        print_result({"success": False, "error": "Setting exact volume not supported, use up/down"}, json_output)
+        if value is None:
+            print_result({"success": False, "error": "Please provide volume percentage 0-100"}, json_output)
+        else:
+            success = volume_ctrl.set(value)
+            print_result({"success": success, "message": f"Volume set to {value}%"}, json_output)
 
 
 @main.command(name="mute")
@@ -350,7 +367,7 @@ def repl():
     """Start interactive REPL mode."""
     commands = [
         "launch", "quit", "show", "hide",
-        "play", "pause", "toggle", "next", "previous",
+        "play", "pause", "toggle", "next", "previous", "like",
         "volume", "mute", "current", "status",
         "config", "detect",
         "exit", "help",

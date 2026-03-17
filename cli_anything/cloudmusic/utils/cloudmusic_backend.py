@@ -461,6 +461,45 @@ class CloudMusicBackend:
         """Send mute toggle key."""
         _send_vk(VK_VOLUME_MUTE)
 
+    def send_like_shortcut(self) -> None:
+        """Send Ctrl+S shortcut to like/current song.
+
+        This is the default shortcut in NetEase CloudMusic for
+        adding the current song to "My Favorites".
+        """
+        # Send Ctrl+S using SendInput with modifier
+        import time
+        extra = ctypes.c_ulong(0)
+
+        # VK_CONTROL = 0x11, VK_S = 0x53
+        VK_CONTROL = 0x11
+        VK_S = 0x53
+
+        # Press Ctrl
+        ki_ctrl_down = KEYBDINPUT(VK_CONTROL, 0, 0, 0, ctypes.pointer(extra))
+        input_ctrl_down = INPUT(INPUT_KEYBOARD, ki_ctrl_down)
+
+        # Press S
+        ki_s_down = KEYBDINPUT(VK_S, 0, 0, 0, ctypes.pointer(extra))
+        input_s_down = INPUT(INPUT_KEYBOARD, ki_s_down)
+
+        # Release S
+        ki_s_up = KEYBDINPUT(VK_S, 0, KEYEVENTF_KEYUP, 0, ctypes.pointer(extra))
+        input_s_up = INPUT(INPUT_KEYBOARD, ki_s_up)
+
+        # Release Ctrl
+        ki_ctrl_up = KEYBDINPUT(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0, ctypes.pointer(extra))
+        input_ctrl_up = INPUT(INPUT_KEYBOARD, ki_ctrl_up)
+
+        inputs = [input_ctrl_down, input_s_down, input_s_up, input_ctrl_up]
+        n_inputs = len(inputs)
+        cb_size = ctypes.sizeof(INPUT)
+
+        user32.SendInput(n_inputs, (INPUT * n_inputs)(*inputs), cb_size)
+
+        # Small delay to ensure the keys are processed
+        time.sleep(0.05)
+
     def get_window_title(self) -> Optional[str]:
         """Get the current window title of the main window.
 
