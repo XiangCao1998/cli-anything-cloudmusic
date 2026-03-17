@@ -11,6 +11,7 @@ import time
 from typing import Optional, Tuple
 
 import psutil
+import click
 
 # Virtual Key Codes for Media Keys
 VK_MEDIA_PLAY_PAUSE = 0xB3
@@ -427,7 +428,7 @@ class CloudMusicBackend:
                 )
             return True
         except Exception as e:
-            print(f"Launch error: {e}")
+            click.echo(f"Launch error: {e}", err=True)
             return False
 
     def _wsl_to_windows(self, wsl_path: str) -> str:

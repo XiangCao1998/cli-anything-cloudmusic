@@ -27,6 +27,12 @@ dependencies = [
   "prompt_toolkit>=3.0",
 ]
 
+[project.optional-dependencies]
+test = [
+  "pytest>=7.0",
+  "pytest-cov>=4.0",
+]
+
 [project.urls]
 Homepage = "https://github.com/XiangCao1998/cli-anything-cloudmusic"
 Repository = "https://github.com/XiangCao1998/cli-anything-cloudmusic"
