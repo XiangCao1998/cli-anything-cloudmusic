@@ -83,6 +83,8 @@ cli-anything-cloudmusic --json current
 | `mute` | Toggle mute |
 | `current` | Show current track |
 | `status` | Show playback status |
+| `detect` | Auto-detect CloudMusic installation |
+| `config <path>` | Save custom path to cloudmusic.exe |
 
 ## Requirements
 
@@ -93,11 +95,35 @@ cli-anything-cloudmusic --json current
 
 ## For AI Agents
 
-All commands support the `--json` flag that outputs structured JSON. **Note:** `--json` must be placed before the command:
+### Quick Start for AI
 
-```bash
-cli-anything-cloudmusic --json current
-```
+When the user asks to play music/control NetEase CloudMusic:
+
+1. **First check if it's installed and detected**:
+   ```bash
+   cli-anything-cloudmusic --json detect
+   ```
+   If `success: false`, ask the user for the path to `cloudmusic.exe` and configure it:
+   ```bash
+   cli-anything-cloudmusic config "C:\Program Files\NetEase\CloudMusic\cloudmusic.exe"
+   ```
+
+2. **Launch if not running**:
+   ```bash
+   cli-anything-cloudmusic launch
+   ```
+
+3. **Control playback**:
+   ```bash
+   cli-anything-cloudmusic play      # Start playback
+   cli-anything-cloudmusic next     # Next track
+   cli-anything-cloudmusic pause    # Pause
+   ```
+
+4. **Always use `--json` for machine-readable output**:
+   ```bash
+   cli-anything-cloudmusic --json current
+   ```
 
 Output example:
 ```json
@@ -110,6 +136,20 @@ Output example:
 ```
 
 This makes it easy for AI agents to parse the output and act on results.
+
+All commands support the `--json` flag that outputs structured JSON. **Note:** `--json` must be placed before the command.
+
+## Auto-Discovery
+
+The tool automatically tries to find CloudMusic in this order:
+
+1. Custom configured path from `~/.config/cli-anything-cloudmusic/path.txt`
+2. Windows Registry search (uninstall information)
+3. `where.exe` search
+4. Common default installation paths
+5. Search Program Files on all common drives (C:, D:, E:, F:)
+
+If auto-discovery fails, just use `config` command to set a custom path - it will be saved persistently.
 
 ## Running from WSL (Windows Subsystem for Linux)
 

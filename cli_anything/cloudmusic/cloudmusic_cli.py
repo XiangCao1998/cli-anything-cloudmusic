@@ -1,6 +1,7 @@
 """Main CLI entry point for NetEase CloudMusic CLI."""
 
 import json
+import os
 import click
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
@@ -65,7 +66,17 @@ def launch(ctx):
     if success:
         print_result({"success": True, "message": "CloudMusic launched successfully"}, json_output)
     else:
-        print_result({"success": False, "error": "Failed to launch CloudMusic"}, json_output)
+        if not backend.get_exe_path():
+            print_result({
+                "success": False,
+                "error": (
+                    "Could not find CloudMusic installation automatically. "
+                    "Please set custom path with:\n"
+                    "  cli-anything-cloudmusic config <path-to-cloudmusic.exe>"
+                )
+            }, json_output)
+        else:
+            print_result({"success": False, "error": "Failed to launch CloudMusic"}, json_output)
 
 
 @main.command(name="quit")
@@ -271,12 +282,77 @@ def status(ctx):
     print_result(status, json_output)
 
 
+@main.command(name="config")
+@click.argument("path", required=True)
+@click.pass_context
+def config(ctx, path):
+    """Configure custom path to cloudmusic.exe.
+
+    Saves the path to config file for persistent use.
+
+    Example:
+      cli-anything-cloudmusic config "C:\\Program Files\\NetEase\\CloudMusic\\cloudmusic.exe"
+      cli-anything-cloudmusic config "/mnt/d/Program Files/NetEase/CloudMusic/cloudmusic.exe"
+    """
+    backend = ctx.obj["backend"]
+    json_output = ctx.obj["json_output"]
+
+    # Check if path exists
+    if not os.path.exists(path):
+        # Try WSL path conversion if needed
+        # Maybe the user gave Windows path but we're on WSL
+        try:
+            wsl_path = backend._windows_to_wsl(path)
+            if os.path.exists(wsl_path):
+                path = wsl_path
+        except Exception:
+            pass
+
+    success = backend.save_custom_path(path)
+    if success:
+        print_result({
+            "success": True,
+            "message": f"Custom path saved: {path}",
+            "path": path
+        }, json_output)
+    else:
+        print_result({
+            "success": False,
+            "error": "Failed to save custom path"
+        }, json_output)
+
+
+@main.command(name="detect")
+@click.pass_context
+def detect(ctx):
+    """Detect cloudmusic installation automatically."""
+    backend = ctx.obj["backend"]
+    json_output = ctx.obj["json_output"]
+
+    found_path = backend.get_exe_path()
+    if found_path:
+        print_result({
+            "success": True,
+            "message": f"CloudMusic found at: {found_path}",
+            "path": found_path
+        }, json_output)
+    else:
+        print_result({
+            "success": False,
+            "error": (
+                "Could not automatically find CloudMusic installation. "
+                "Use `cli-anything-cloudmusic config <path>` to set custom path."
+            )
+        }, json_output)
+
+
 def repl():
     """Start interactive REPL mode."""
     commands = [
         "launch", "quit", "show", "hide",
         "play", "pause", "toggle", "next", "previous",
         "volume", "mute", "current", "status",
+        "config", "detect",
         "exit", "help",
     ]
 

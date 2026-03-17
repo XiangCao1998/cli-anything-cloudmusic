@@ -73,7 +73,12 @@ class CloudMusicBackend:
         r"C:\Program Files\NetEase\CloudMusic\cloudmusic.exe",
         r"C:\Program Files (x86)\NetEase\CloudMusic\cloudmusic.exe",
         os.path.expandvars(r"%LOCALAPPDATA%\Programs\NetEase\CloudMusic\cloudmusic.exe"),
+        r"E:\Program Files\NetEase\CloudMusic\cloudmusic.exe",
+        r"F:\Program Files\NetEase\CloudMusic\cloudmusic.exe",
     ]
+
+    # Config file location for custom path (in user's home directory)
+    CONFIG_PATH = os.path.expanduser("~/.config/cli-anything-cloudmusic/path.txt")
 
     def __init__(self, exe_path: Optional[str] = None):
         """Initialize the backend.
@@ -84,7 +89,50 @@ class CloudMusicBackend:
         self._exe_path = exe_path or self._find_exe()
 
     def _find_exe(self) -> Optional[str]:
-        """Try to find cloudmusic.exe in default locations."""
+        """Try to find cloudmusic.exe in various locations.
+
+        Order:
+        1. Custom config path from ~/.config/cli-anything-cloudmusic/path.txt
+        2. Windows Registry search (uninstall information)
+        3. where.exe search
+        4. Default paths
+        5. Search in Program Files directories
+        """
+        # 1. Try config file first (user custom path)
+        config_path = self._read_config()
+        if config_path:
+            try:
+                if config_path.startswith("/mnt/"):
+                    if os.path.exists(config_path):
+                        return config_path
+                else:
+                    if os.path.exists(config_path):
+                        return config_path
+                    # Try WSL conversion
+                    wsl_path = self._windows_to_wsl(config_path)
+                    if os.path.exists(wsl_path):
+                        return wsl_path
+            except Exception:
+                pass
+
+        # 2. Try Windows Registry search
+        reg_path = self._find_from_registry()
+        if reg_path:
+            try:
+                if os.path.exists(reg_path):
+                    return reg_path
+                wsl_path = self._windows_to_wsl(reg_path)
+                if os.path.exists(wsl_path):
+                    return wsl_path
+            except Exception:
+                pass
+
+        # 3. Try where.exe search
+        where_path = self._find_from_where()
+        if where_path:
+            return where_path
+
+        # 4. Try default paths
         for path in self.DEFAULT_PATHS:
             # Convert WSL paths if needed
             if path.startswith("/mnt/"):
@@ -103,7 +151,135 @@ class CloudMusicBackend:
                     return wsl_path
             except Exception:
                 continue
+
+        # 5. Search common Program Files directories
+        search_drives = ["C", "D", "E", "F"]
+        for drive in search_drives:
+            for program_dir in [r"\Program Files", r"\Program Files (x86)"]:
+                path = fr"{drive}:{program_dir}\NetEase\CloudMusic\cloudmusic.exe"
+                try:
+                    if os.path.exists(path):
+                        return path
+                except OSError:
+                    pass
+                try:
+                    wsl_path = self._windows_to_wsl(path)
+                    if os.path.exists(wsl_path):
+                        return wsl_path
+                except Exception:
+                    pass
+
         return None
+
+    def _read_config(self) -> Optional[str]:
+        """Read custom path from config file."""
+        try:
+            if os.path.exists(self.CONFIG_PATH):
+                with open(self.CONFIG_PATH, 'r') as f:
+                    path = f.read().strip()
+                    if path:
+                        return path
+        except Exception:
+            return None
+        return None
+
+    def _find_from_registry(self) -> Optional[str]:
+        """Try to find installation path from Windows Registry via reg query."""
+        try:
+            # Change to C:\ for CMD compatibility
+            original_cwd = os.getcwd()
+            try:
+                os.chdir("C:")
+            except OSError:
+                pass
+
+            # Query uninstall registry key
+            result = subprocess.run(
+                ["reg", "query", r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "/s", "/f", "CloudMusic"],
+                capture_output=True,
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
+            )
+
+            try:
+                os.chdir(original_cwd)
+            except OSError:
+                pass
+
+            if result.returncode == 0 and result.stdout:
+                lines = result.stdout.splitlines()
+                for i, line in enumerate(lines):
+                    if "CloudMusic" in line and "DisplayIcon" in line:
+                        # DisplayIcon usually has the path to the exe
+                        parts = line.split()
+                        for part in parts:
+                            if part.endswith(".exe"):
+                                return part
+                    if "CloudMusic" in line and "InstallLocation" in line:
+                        parts = line.split()
+                        for part in parts[1:]:
+                            if part:
+                                candidate = os.path.join(part, "cloudmusic.exe")
+                                if candidate.endswith("\\cloudmusic.exe"):
+                                    return candidate
+        except Exception:
+            pass
+        return None
+
+    def _find_from_where(self) -> Optional[str]:
+        """Try where.exe to find cloudmusic.exe."""
+        try:
+            # Change to C:\ for CMD compatibility
+            original_cwd = os.getcwd()
+            try:
+                os.chdir("C:")
+            except OSError:
+                pass
+
+            result = subprocess.run(
+                ["where", "cloudmusic.exe"],
+                capture_output=True,
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
+            )
+
+            try:
+                os.chdir(original_cwd)
+            except OSError:
+                pass
+
+            if result.returncode == 0 and result.stdout:
+                first_line = result.stdout.splitlines()[0].strip()
+                if first_line and os.path.exists(first_line):
+                    return first_line
+                # Try WSL conversion
+                if first_line:
+                    wsl_path = self._windows_to_wsl(first_line)
+                    if os.path.exists(wsl_path):
+                        return wsl_path
+        except Exception:
+            pass
+        return None
+
+    def save_custom_path(self, path: str) -> bool:
+        """Save a custom installation path to config file.
+
+        Args:
+            path: Path to cloudmusic.exe
+
+        Returns:
+            True if saved successfully, False otherwise.
+        """
+        try:
+            config_dir = os.path.dirname(self.CONFIG_PATH)
+            if not os.path.exists(config_dir):
+                os.makedirs(config_dir, exist_ok=True)
+            with open(self.CONFIG_PATH, 'w') as f:
+                f.write(path)
+            self._exe_path = path
+            return True
+        except Exception:
+            return False
 
     def _windows_to_wsl(self, windows_path: str) -> str:
         """Convert Windows path to WSL path."""
