@@ -8,10 +8,12 @@ Perfect for AI assistants like Claude Code to control your music playback via na
 
 ## Features
 
-- ✨ **Playback Control**: play, pause, toggle, next, previous
-- 🔊 **Volume Control**: volume up, volume down, mute toggle
+- ✨ **Playback Control**: play, pause, toggle, next, previous, like (favorite)
+- 🔊 **Volume Control**: volume up, volume down, volume set to %, mute toggle
 - 🎵 **Track Info**: Get current track title and artist
 - 🚀 **App Control**: launch, quit, show, hide window
+- 🔧 **Auto-discovery**: Automatically finds CloudMusic installation
+- ⚙️ **Configurable**: Supports custom installation path
 - 🔄 **REPL Mode**: Interactive mode with autocomplete
 - 🤖 **JSON Output**: Machine-readable output for AI agents
 - 🪟 **WSL Support**: Works perfectly from Windows Subsystem for Linux
@@ -26,7 +28,7 @@ Perfect for AI assistants like Claude Code to control your music playback via na
 ### Install via git (recommended for development)
 
 ```bash
-git clone https://github.com/JackeyCc/cli-anything-cloudmusic.git
+git clone https://github.com/XiangCao1998/cli-anything-cloudmusic.git
 cd cli-anything-cloudmusic
 python -m pip install -e .
 ```
@@ -50,7 +52,7 @@ export PATH="$PATH:/mnt/c/Users/YOUR_USERNAME/AppData/Local/Programs/Python/Pyth
 3. Reload shell and install:
 ```bash
 source ~/.bashrc
-git clone https://github.com/JackeyCc/cli-anything-cloudmusic.git
+git clone https://github.com/XiangCao1998/cli-anything-cloudmusic.git
 cd cli-anything-cloudmusic
 python -m pip install -e .
 ```
@@ -80,6 +82,7 @@ cli-anything-cloudmusic pause      # Pause playback
 cli-anything-cloudmusic toggle     # Toggle play/pause
 cli-anything-cloudmusic next       # Next track
 cli-anything-cloudmusic previous   # Previous track
+cli-anything-cloudmusic like       # Toggle like/favorite on current track
 ```
 
 **Volume Control:**
@@ -95,6 +98,12 @@ cli-anything-cloudmusic mute                # Toggle mute
 ```bash
 cli-anything-cloudmusic status    # Get playback status
 cli-anything-cloudmusic current    # Get current track info
+```
+
+**Configuration & Discovery:**
+```bash
+cli-anything-cloudmusic detect    # Auto-detect CloudMusic installation
+cli-anything-cloudmusic config <path>  # Save custom installation path
 ```
 
 **JSON Output (for AI agents):**
@@ -152,11 +161,15 @@ Example output:
 | `toggle` | Toggle play/pause |
 | `next` | Skip to next track |
 | `previous` | Go to previous track |
+| `like` | Toggle like/favorite on current track |
 | `volume up [N]` | Increase volume by N (default: 10) |
 | `volume down [N]` | Decrease volume by N (default: 10) |
+| `volume set <0-100>` | Set volume to specific percentage |
 | `mute` | Toggle mute |
 | `current` | Show current track information |
 | `status` | Show playback status |
+| `detect` | Auto-detect CloudMusic installation |
+| `config <path>` | Save custom installation path |
 
 ## How It Works
 
