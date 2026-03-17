@@ -70,3 +70,16 @@ class PlaybackController:
             return False
         self.backend.send_previous_track()
         return True
+
+    def like(self) -> bool:
+        """Like/favorite the current track (uses Ctrl+S shortcut).
+
+        This toggles the favorite state of the current track in NetEase CloudMusic.
+
+        Returns:
+            True if command sent successfully, False if app not running.
+        """
+        if not self.is_running():
+            return False
+        self.backend.send_like_shortcut()
+        return True

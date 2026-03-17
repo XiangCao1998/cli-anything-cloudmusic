@@ -83,6 +83,7 @@ cli-anything-cloudmusic --json current
 | `mute` | Toggle mute |
 | `current` | Show current track |
 | `status` | Show playback status |
+| `like` | Toggle like/favorite on current track |
 | `detect` | Auto-detect CloudMusic installation |
 | `config <path>` | Save custom path to cloudmusic.exe |
 

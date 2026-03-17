@@ -59,3 +59,36 @@ class VolumeController:
             return False
         self.backend.send_volume_mute()
         return True
+
+    def set(self, percentage: int) -> bool:
+        """Set volume to specific percentage (0-100).
+
+        Works by muting (go to 0) then sending volume up N times.
+        Each step increases volume by ~4% so this gets close to the target.
+
+        Args:
+            percentage: Desired volume percentage 0-100
+
+        Returns:
+            True if command sent successfully.
+        """
+        if not self.is_running():
+            return False
+
+        percentage = max(0, min(100, percentage))
+
+        # Mute goes to zero
+        self.backend.send_volume_mute()
+
+        # If zero, we're done
+        if percentage == 0:
+            return True
+
+        # Each step is ~4%, calculate steps needed
+        steps = int(percentage // 4)
+
+        # Send volume up steps
+        for _ in range(steps):
+            self.backend.send_volume_up()
+
+        return True
