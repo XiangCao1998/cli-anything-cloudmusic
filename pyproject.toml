@@ -6,7 +6,7 @@ authors = [
 ]
 description = "CLI interface for NetEase CloudMusic (网易云音乐)"
 readme = "README.md"
-license = { text = "MIT" }
+license = { file = "LICENSE" }
 requires-python = ">=3.8"
 keywords = ["cli", "cli-anything", "netease", "cloudmusic", "music", "player"]
 classifiers = [
