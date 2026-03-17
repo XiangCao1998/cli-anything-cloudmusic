@@ -1,6 +1,5 @@
 """Volume control for NetEase CloudMusic."""
 
-from typing import Optional
 from ..utils import CloudMusicBackend
 
 

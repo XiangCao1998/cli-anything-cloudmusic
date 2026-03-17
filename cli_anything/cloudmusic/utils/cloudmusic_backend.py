@@ -8,7 +8,7 @@ import ctypes
 import subprocess
 import os
 import time
-from typing import Optional, Tuple
+from typing import Optional
 
 import psutil
 import click
