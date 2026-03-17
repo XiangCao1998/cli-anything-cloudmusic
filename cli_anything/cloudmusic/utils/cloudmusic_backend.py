@@ -45,12 +45,15 @@ class INPUT(ctypes.Structure):
     ]
 
 
-user32 = ctypes.windll.user32
+def _get_user32():
+    """Get user32 handle lazily to avoid AttributeError on non-Windows systems."""
+    return ctypes.windll.user32
 
 
 def _send_vk(vk_code: int) -> None:
     """Send a virtual key press using SendInput."""
     extra = ctypes.c_ulong(0)
+    user32 = _get_user32()
 
     # Key down
     ki_down = KEYBDINPUT(vk_code, 0, 0, 0, ctypes.pointer(extra))
@@ -364,6 +367,7 @@ class CloudMusicBackend:
         # Enumerate all visible windows to find one with "CloudMusic" in title
         # We can't rely on class name alone since it's an Electron app
         try:
+            user32 = _get_user32()
             found_hwnd = []
 
             def enum_callback(hwnd, lParam):
@@ -502,6 +506,7 @@ class CloudMusicBackend:
         """
         # Send Ctrl+S using SendInput with modifier
         extra = ctypes.c_ulong(0)
+        user32 = _get_user32()
 
         # VK_CONTROL = 0x11, VK_S = 0x53
         VK_CONTROL = 0x11
@@ -541,6 +546,7 @@ class CloudMusicBackend:
         # From WSL, we rely on the fact that when running through Windows Python
         # ctypes can access user32
         try:
+            user32 = _get_user32()
             # We need to enumerate all windows to find the one with CloudMusic
             titles = []
 
@@ -575,6 +581,7 @@ class CloudMusicBackend:
         # Simple implementation - more could be done with SetForegroundWindow
         # For basic usage, just ensure it's not minimized
         try:
+            user32 = _get_user32()
             hwnd = self.find_window()
             if hwnd:
                 user32.ShowWindow(hwnd, 9)  # SW_RESTORE
@@ -590,6 +597,7 @@ class CloudMusicBackend:
             True if successful, False if window not found.
         """
         try:
+            user32 = _get_user32()
             hwnd = self.find_window()
             if hwnd:
                 user32.ShowWindow(hwnd, 6)  # SW_MINIMIZE
