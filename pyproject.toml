@@ -88,7 +88,7 @@ python_version = "3.8"
 strict = false
 show_error_codes = true
 ignore_missing_imports = true
-follow_imports = silent
+follow_imports = "silent"
 allow_untyped_defs = true
 exclude = [
   "win32",
