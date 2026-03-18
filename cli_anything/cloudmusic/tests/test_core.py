@@ -1,8 +1,7 @@
 """Unit tests for core functionality."""
 
-import pytest
-from cli_anything.cloudmusic.utils.window_detector import WindowDetector
 from cli_anything.cloudmusic.utils.cloudmusic_backend import CloudMusicBackend
+from cli_anything.cloudmusic.utils.window_detector import WindowDetector
 
 
 class MockBackend:
@@ -91,5 +90,5 @@ def test_backend_default_paths():
     """Test that backend checks default paths."""
     backend = CloudMusicBackend()
     # Should find something on a system with CloudMusic installed
-    path = backend.get_exe_path()
+    _ = backend.get_exe_path()
     # If not found, returns None - that's okay

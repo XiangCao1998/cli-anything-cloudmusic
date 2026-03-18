@@ -4,14 +4,14 @@ This module provides low-level access to control CloudMusic through
 Windows API messages and media key simulation.
 """
 
-import subprocess
 import os
-import time
+import subprocess
 import sys
+import time
 from typing import Optional
 
-import psutil
 import click
+import psutil
 
 # Virtual Key Codes for Media Keys
 VK_MEDIA_PLAY_PAUSE = 0xB3
@@ -191,7 +191,7 @@ class CloudMusicBackend:
         """Read custom path from config file."""
         try:
             if os.path.exists(self.CONFIG_PATH):
-                with open(self.CONFIG_PATH, 'r') as f:
+                with open(self.CONFIG_PATH) as f:
                     path = f.read().strip()
                     if path:
                         return path
@@ -224,7 +224,7 @@ class CloudMusicBackend:
 
             if result.returncode == 0 and result.stdout:
                 lines = result.stdout.splitlines()
-                for i, line in enumerate(lines):
+                for _i, line in enumerate(lines):
                     if "CloudMusic" in line and "DisplayIcon" in line:
                         # DisplayIcon usually has the path to the exe
                         parts = line.split()
@@ -425,7 +425,7 @@ class CloudMusicBackend:
                 # Convert WSL path to Windows path
                 windows_path = self._wsl_to_windows(self._exe_path)
                 # Change to C:\ before launching because CMD doesn't support WSL UNC paths
-                result = subprocess.run(
+                subprocess.run(
                     ["cmd.exe", "/c", "start", "", windows_path],
                     cwd="C:\\",
                     capture_output=True

@@ -7,9 +7,11 @@ These tests require:
 """
 
 import ctypes
-import pytest
-import subprocess
 import json
+import subprocess
+
+import pytest
+
 from cli_anything.cloudmusic.utils.cloudmusic_backend import CloudMusicBackend
 
 
@@ -31,7 +33,6 @@ def _resolve_cli():
 @pytest.mark.skipif(not hasattr(ctypes, "windll"), reason="Requires Windows")
 def test_backend_detects_running():
     """Test that backend detects if app is running."""
-    import ctypes
     backend = CloudMusicBackend()
     # Just check that it runs without error
     running = backend.is_running()
@@ -42,7 +43,6 @@ def test_backend_detects_running():
 @pytest.mark.skipif(not hasattr(ctypes, "windll"), reason="Requires Windows")
 def test_can_find_window_title():
     """Test that we can get window title when running."""
-    import ctypes
     backend = CloudMusicBackend()
     if not backend.is_running():
         pytest.skip("CloudMusic is not running")
@@ -56,7 +56,6 @@ def test_can_find_window_title():
 @pytest.mark.skipif(not hasattr(ctypes, "windll"), reason="Requires Windows")
 def test_cli_current_json():
     """Test current command outputs JSON."""
-    import ctypes
     cmd = _resolve_cli()
     result = subprocess.run(cmd + ["current", "--json"], capture_output=True, text=True)
     # Should exit cleanly
@@ -75,7 +74,6 @@ def test_cli_current_json():
 @pytest.mark.skipif(not hasattr(ctypes, "windll"), reason="Requires Windows")
 def test_cli_status_json():
     """Test status command outputs JSON."""
-    import ctypes
     cmd = _resolve_cli()
     result = subprocess.run(cmd + ["status", "--json"], capture_output=True, text=True)
     data = json.loads(result.stdout)
@@ -86,7 +84,6 @@ def test_cli_status_json():
 @pytest.mark.skipif(not hasattr(ctypes, "windll"), reason="Requires Windows")
 def test_help():
     """Test help command works."""
-    import ctypes
     cmd = _resolve_cli()
     result = subprocess.run(cmd + ["--help"], capture_output=True, text=True)
     assert result.returncode == 0

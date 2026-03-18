@@ -2,15 +2,16 @@
 
 import json
 import os
+
 import click
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.styles import Style
 
-from .utils import CloudMusicBackend, WindowDetector
 from .core.playback import PlaybackController
-from .core.volume import VolumeController
 from .core.track import TrackInfoRetriever
+from .core.volume import VolumeController
+from .utils import CloudMusicBackend, WindowDetector
 
 
 def print_result(result, json_output: bool):
