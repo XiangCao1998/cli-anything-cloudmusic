@@ -88,7 +88,9 @@ class CloudMusicBackend:
         r"D:\Program Files\NetEase\CloudMusic\cloudmusic.exe",
         r"C:\Program Files\NetEase\CloudMusic\cloudmusic.exe",
         r"C:\Program Files (x86)\NetEase\CloudMusic\cloudmusic.exe",
-        os.path.expandvars(r"%LOCALAPPDATA%\Programs\NetEase\CloudMusic\cloudmusic.exe"),
+        os.path.expandvars(
+            r"%LOCALAPPDATA%\Programs\NetEase\CloudMusic\cloudmusic.exe"
+        ),
         r"E:\Program Files\NetEase\CloudMusic\cloudmusic.exe",
         r"F:\Program Files\NetEase\CloudMusic\cloudmusic.exe",
     ]
@@ -172,7 +174,7 @@ class CloudMusicBackend:
         search_drives = ["C", "D", "E", "F"]
         for drive in search_drives:
             for program_dir in [r"\Program Files", r"\Program Files (x86)"]:
-                path = fr"{drive}:{program_dir}\NetEase\CloudMusic\cloudmusic.exe"
+                path = rf"{drive}:{program_dir}\NetEase\CloudMusic\cloudmusic.exe"
                 try:
                     if os.path.exists(path):
                         return path
@@ -211,10 +213,19 @@ class CloudMusicBackend:
 
             # Query uninstall registry key
             result = subprocess.run(
-                ["reg", "query", r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "/s", "/f", "CloudMusic"],
+                [
+                    "reg",
+                    "query",
+                    r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
+                    "/s",
+                    "/f",
+                    "CloudMusic",
+                ],
                 capture_output=True,
                 text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
+                creationflags=subprocess.CREATE_NO_WINDOW
+                if hasattr(subprocess, "CREATE_NO_WINDOW")
+                else 0,
             )
 
             try:
@@ -256,7 +267,9 @@ class CloudMusicBackend:
                 ["where", "cloudmusic.exe"],
                 capture_output=True,
                 text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
+                creationflags=subprocess.CREATE_NO_WINDOW
+                if hasattr(subprocess, "CREATE_NO_WINDOW")
+                else 0,
             )
 
             try:
@@ -292,7 +305,7 @@ class CloudMusicBackend:
                 config_dir = os.path.dirname(self.CONFIG_PATH)
                 if not os.path.exists(config_dir):
                     os.makedirs(config_dir, exist_ok=True)
-                with open(self.CONFIG_PATH, 'w') as f:
+                with open(self.CONFIG_PATH, "w") as f:
                     f.write(path)
                 self._exe_path = path
                 return True
@@ -303,7 +316,7 @@ class CloudMusicBackend:
                     config_dir = os.path.dirname(self.CONFIG_PATH)
                     if not os.path.exists(config_dir):
                         os.makedirs(config_dir, exist_ok=True)
-                    with open(self.CONFIG_PATH, 'w') as f:
+                    with open(self.CONFIG_PATH, "w") as f:
                         f.write(wsl_path)
                     self._exe_path = wsl_path
                     return True
@@ -354,7 +367,9 @@ class CloudMusicBackend:
                 ["tasklist"],
                 capture_output=True,
                 text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
+                creationflags=subprocess.CREATE_NO_WINDOW
+                if hasattr(subprocess, "CREATE_NO_WINDOW")
+                else 0,
             )
             try:
                 os.chdir(original_cwd)
@@ -392,7 +407,9 @@ class CloudMusicBackend:
                             found_hwnd.append(hwnd)
                 return 1
 
-            WNDENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p)
+            WNDENUMPROC = ctypes.WINFUNCTYPE(
+                ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p
+            )
             callback = WNDENUMPROC(enum_callback)
             user32.EnumWindows(callback, None)
 
@@ -428,18 +445,20 @@ class CloudMusicBackend:
                 subprocess.run(
                     ["cmd.exe", "/c", "start", "", windows_path],
                     cwd="C:\\",
-                    capture_output=True
+                    capture_output=True,
                 )
             else:
                 # Normal Windows launch
                 # For native Windows paths, change to C:\ if cwd is WSL UNC path
                 launch_cwd = os.path.dirname(self._exe_path)
-                if os.getcwd().startswith('//'):
+                if os.getcwd().startswith("//"):
                     launch_cwd = "C:\\"
                 subprocess.Popen(
                     [self._exe_path],
                     cwd=launch_cwd,
-                    creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
+                    creationflags=subprocess.CREATE_NO_WINDOW
+                    if hasattr(subprocess, "CREATE_NO_WINDOW")
+                    else 0,
                 )
             return True
         except Exception as e:
@@ -469,7 +488,9 @@ class CloudMusicBackend:
             subprocess.run(
                 ["taskkill", "/F", "/IM", "cloudmusic.exe"],
                 capture_output=True,
-                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
+                creationflags=subprocess.CREATE_NO_WINDOW
+                if hasattr(subprocess, "CREATE_NO_WINDOW")
+                else 0,
             )
             return True
         except Exception:
@@ -536,7 +557,9 @@ class CloudMusicBackend:
         input_s_up = INPUT(INPUT_KEYBOARD, ki_s_up)
 
         # Release Ctrl
-        ki_ctrl_up = KEYBDINPUT(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0, ctypes.pointer(extra))
+        ki_ctrl_up = KEYBDINPUT(
+            VK_CONTROL, 0, KEYEVENTF_KEYUP, 0, ctypes.pointer(extra)
+        )
         input_ctrl_up = INPUT(INPUT_KEYBOARD, ki_ctrl_up)
 
         inputs = [input_ctrl_down, input_s_down, input_s_up, input_ctrl_up]
@@ -572,7 +595,9 @@ class CloudMusicBackend:
                             titles.append(title)
                 return 1
 
-            WNDENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p)
+            WNDENUMPROC = ctypes.WINFUNCTYPE(
+                ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p
+            )
             callback = WNDENUMPROC(enum_callback)
             user32.EnumWindows(callback, None)
 

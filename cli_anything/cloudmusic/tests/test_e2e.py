@@ -20,7 +20,9 @@ def _resolve_cli():
     # Try local and installed
     try:
         # Check if installed
-        result = subprocess.run(["where", "cli-anything-cloudmusic"], capture_output=True, text=True)
+        result = subprocess.run(
+            ["where", "cli-anything-cloudmusic"], capture_output=True, text=True
+        )
         if result.returncode == 0:
             return "cli-anything-cloudmusic"
     except Exception:

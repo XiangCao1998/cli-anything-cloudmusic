@@ -29,7 +29,13 @@ def print_result(result, json_output: bool):
 
 
 @click.group(invoke_without_command=True)
-@click.option("--json", "json_output", is_flag=True, default=False, help="Output JSON format for machine consumption.")
+@click.option(
+    "--json",
+    "json_output",
+    is_flag=True,
+    default=False,
+    help="Output JSON format for machine consumption.",
+)
 @click.pass_context
 def main(ctx, json_output):
     """CLI interface for NetEase CloudMusic (网易云音乐).
@@ -60,24 +66,34 @@ def launch(ctx):
     json_output = ctx.obj["json_output"]
 
     if backend.is_running():
-        print_result({"success": True, "message": "CloudMusic is already running"}, json_output)
+        print_result(
+            {"success": True, "message": "CloudMusic is already running"}, json_output
+        )
         return
 
     success = backend.launch()
     if success:
-        print_result({"success": True, "message": "CloudMusic launched successfully"}, json_output)
+        print_result(
+            {"success": True, "message": "CloudMusic launched successfully"},
+            json_output,
+        )
     else:
         if not backend.get_exe_path():
-            print_result({
-                "success": False,
-                "error": (
-                    "Could not find CloudMusic installation automatically. "
-                    "Please set custom path with:\n"
-                    "  cli-anything-cloudmusic config <path-to-cloudmusic.exe>"
-                )
-            }, json_output)
+            print_result(
+                {
+                    "success": False,
+                    "error": (
+                        "Could not find CloudMusic installation automatically. "
+                        "Please set custom path with:\n"
+                        "  cli-anything-cloudmusic config <path-to-cloudmusic.exe>"
+                    ),
+                },
+                json_output,
+            )
         else:
-            print_result({"success": False, "error": "Failed to launch CloudMusic"}, json_output)
+            print_result(
+                {"success": False, "error": "Failed to launch CloudMusic"}, json_output
+            )
 
 
 @main.command(name="quit")
@@ -88,14 +104,20 @@ def quit(ctx):
     json_output = ctx.obj["json_output"]
 
     if not backend.is_running():
-        print_result({"success": True, "message": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": True, "message": "CloudMusic is not running"}, json_output
+        )
         return
 
     success = backend.quit()
     if success:
-        print_result({"success": True, "message": "CloudMusic quit successfully"}, json_output)
+        print_result(
+            {"success": True, "message": "CloudMusic quit successfully"}, json_output
+        )
     else:
-        print_result({"success": False, "error": "Failed to quit CloudMusic"}, json_output)
+        print_result(
+            {"success": False, "error": "Failed to quit CloudMusic"}, json_output
+        )
 
 
 @main.command(name="show")
@@ -106,7 +128,9 @@ def show(ctx):
     json_output = ctx.obj["json_output"]
 
     if not backend.is_running():
-        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": False, "error": "CloudMusic is not running"}, json_output
+        )
         return
 
     success = backend.bring_to_front()
@@ -121,7 +145,9 @@ def hide(ctx):
     json_output = ctx.obj["json_output"]
 
     if not backend.is_running():
-        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": False, "error": "CloudMusic is not running"}, json_output
+        )
         return
 
     success = backend.minimize()
@@ -137,7 +163,9 @@ def play(ctx):
 
     success = playback.play()
     if not success:
-        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": False, "error": "CloudMusic is not running"}, json_output
+        )
     else:
         print_result({"success": True, "message": "Playback started"}, json_output)
 
@@ -151,7 +179,9 @@ def pause(ctx):
 
     success = playback.pause()
     if not success:
-        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": False, "error": "CloudMusic is not running"}, json_output
+        )
     else:
         print_result({"success": True, "message": "Playback paused"}, json_output)
 
@@ -165,7 +195,9 @@ def toggle(ctx):
 
     success = playback.toggle()
     if not success:
-        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": False, "error": "CloudMusic is not running"}, json_output
+        )
     else:
         print_result({"success": True}, json_output)
 
@@ -179,7 +211,9 @@ def next_track(ctx):
 
     success = playback.next()
     if not success:
-        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": False, "error": "CloudMusic is not running"}, json_output
+        )
     else:
         print_result({"success": True}, json_output)
 
@@ -193,7 +227,9 @@ def previous_track(ctx):
 
     success = playback.previous()
     if not success:
-        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": False, "error": "CloudMusic is not running"}, json_output
+        )
     else:
         print_result({"success": True}, json_output)
 
@@ -210,9 +246,14 @@ def like(ctx):
 
     success = playback.like()
     if not success:
-        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": False, "error": "CloudMusic is not running"}, json_output
+        )
     else:
-        print_result({"success": True, "message": "Like shortcut sent (toggled favorite state)"}, json_output)
+        print_result(
+            {"success": True, "message": "Like shortcut sent (toggled favorite state)"},
+            json_output,
+        )
 
 
 @main.command(name="volume")
@@ -233,28 +274,41 @@ def volume(ctx, action, value):
     json_output = ctx.obj["json_output"]
 
     if not volume_ctrl.is_running():
-        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": False, "error": "CloudMusic is not running"}, json_output
+        )
         return
 
     if action is None:
         # Currently we can't get exact volume level via this approach
-        print_result({"message": "Volume control available via up/down/toggle"}, json_output)
+        print_result(
+            {"message": "Volume control available via up/down/toggle"}, json_output
+        )
         return
 
     delta = value if value is not None else 10
 
     if action == "up":
         success = volume_ctrl.up(delta)
-        print_result({"success": success, "message": f"Increased volume by {delta}"}, json_output)
+        print_result(
+            {"success": success, "message": f"Increased volume by {delta}"}, json_output
+        )
     elif action == "down":
         success = volume_ctrl.down(delta)
-        print_result({"success": success, "message": f"Decreased volume by {delta}"}, json_output)
+        print_result(
+            {"success": success, "message": f"Decreased volume by {delta}"}, json_output
+        )
     elif action == "set":
         if value is None:
-            print_result({"success": False, "error": "Please provide volume percentage 0-100"}, json_output)
+            print_result(
+                {"success": False, "error": "Please provide volume percentage 0-100"},
+                json_output,
+            )
         else:
             success = volume_ctrl.set(value)
-            print_result({"success": success, "message": f"Volume set to {value}%"}, json_output)
+            print_result(
+                {"success": success, "message": f"Volume set to {value}%"}, json_output
+            )
 
 
 @main.command(name="mute")
@@ -266,7 +320,9 @@ def mute(ctx):
 
     success = volume_ctrl.toggle_mute()
     if not success:
-        print_result({"success": False, "error": "CloudMusic is not running"}, json_output)
+        print_result(
+            {"success": False, "error": "CloudMusic is not running"}, json_output
+        )
     else:
         print_result({"success": True, "message": "Mute toggled"}, json_output)
 
@@ -328,16 +384,14 @@ def config(ctx, path):
 
     success = backend.save_custom_path(path)
     if success:
-        print_result({
-            "success": True,
-            "message": f"Custom path saved: {path}",
-            "path": path
-        }, json_output)
+        print_result(
+            {"success": True, "message": f"Custom path saved: {path}", "path": path},
+            json_output,
+        )
     else:
-        print_result({
-            "success": False,
-            "error": "Failed to save custom path"
-        }, json_output)
+        print_result(
+            {"success": False, "error": "Failed to save custom path"}, json_output
+        )
 
 
 @main.command(name="detect")
@@ -349,35 +403,56 @@ def detect(ctx):
 
     found_path = backend.get_exe_path()
     if found_path:
-        print_result({
-            "success": True,
-            "message": f"CloudMusic found at: {found_path}",
-            "path": found_path
-        }, json_output)
+        print_result(
+            {
+                "success": True,
+                "message": f"CloudMusic found at: {found_path}",
+                "path": found_path,
+            },
+            json_output,
+        )
     else:
-        print_result({
-            "success": False,
-            "error": (
-                "Could not automatically find CloudMusic installation. "
-                "Use `cli-anything-cloudmusic config <path>` to set custom path."
-            )
-        }, json_output)
+        print_result(
+            {
+                "success": False,
+                "error": (
+                    "Could not automatically find CloudMusic installation. "
+                    "Use `cli-anything-cloudmusic config <path>` to set custom path."
+                ),
+            },
+            json_output,
+        )
 
 
 def repl():
     """Start interactive REPL mode."""
     commands = [
-        "launch", "quit", "show", "hide",
-        "play", "pause", "toggle", "next", "previous", "like",
-        "volume", "mute", "current", "status",
-        "config", "detect",
-        "exit", "help",
+        "launch",
+        "quit",
+        "show",
+        "hide",
+        "play",
+        "pause",
+        "toggle",
+        "next",
+        "previous",
+        "like",
+        "volume",
+        "mute",
+        "current",
+        "status",
+        "config",
+        "detect",
+        "exit",
+        "help",
     ]
 
     completer = WordCompleter(commands)
-    style = Style.from_dict({
-        "prompt": "#ansiblue bold",
-    })
+    style = Style.from_dict(
+        {
+            "prompt": "#ansiblue bold",
+        }
+    )
 
     session = PromptSession(
         "cloudmusic> ",

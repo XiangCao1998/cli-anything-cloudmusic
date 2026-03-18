@@ -1,5 +1,4 @@
-"""Window detector for parsing track information from NetEase CloudMusic window title.
-"""
+"""Window detector for parsing track information from NetEase CloudMusic window title."""
 
 import re
 from typing import Optional, Tuple

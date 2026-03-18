@@ -9,6 +9,7 @@ from ..utils import CloudMusicBackend, WindowDetector
 @dataclass
 class CurrentTrack:
     """Information about the currently playing track."""
+
     title: Optional[str] = None
     artist: Optional[str] = None
     running: bool = False
