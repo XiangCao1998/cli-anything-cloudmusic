@@ -6,7 +6,6 @@ from typing import Optional, Tuple
 
 from .cloudmusic_backend import CloudMusicBackend
 
-
 TrackInfo = Tuple[Optional[str], Optional[str]]
 
 
