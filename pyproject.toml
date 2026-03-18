@@ -22,12 +22,14 @@ classifiers = [
 ]
 dependencies = [
   "click>=8.0",
-  "pywin32>=300",
   "psutil>=5.8",
   "prompt_toolkit>=3.0",
 ]
 
 [project.optional-dependencies]
+windows = [
+  "pywin32>=300",
+]
 test = [
   "pytest>=7.0",
   "pytest-cov>=4.0",

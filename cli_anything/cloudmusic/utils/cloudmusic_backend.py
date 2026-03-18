@@ -4,10 +4,10 @@ This module provides low-level access to control CloudMusic through
 Windows API messages and media key simulation.
 """
 
-import ctypes
 import subprocess
 import os
 import time
+import sys
 from typing import Optional
 
 import psutil
@@ -26,28 +26,39 @@ INPUT_KEYBOARD = 1
 KEYEVENTF_SCANCODE = 0x0008
 KEYEVENTF_KEYUP = 0x0002
 
+# Only import ctypes on Windows systems
+if sys.platform == "win32":
+    import ctypes
 
-class KEYBDINPUT(ctypes.Structure):
-    _fields_ = [
-        ("wVk", ctypes.c_ushort),
-        ("wScan", ctypes.c_ushort),
-        ("dwFlags", ctypes.c_ulong),
-        ("time", ctypes.c_ulong),
-        ("dwExtraInfo", ctypes.POINTER(ctypes.c_ulong)),
-    ]
+    class KEYBDINPUT(ctypes.Structure):
+        _fields_ = [
+            ("wVk", ctypes.c_ushort),
+            ("wScan", ctypes.c_ushort),
+            ("dwFlags", ctypes.c_ulong),
+            ("time", ctypes.c_ulong),
+            ("dwExtraInfo", ctypes.POINTER(ctypes.c_ulong)),
+        ]
 
+    class INPUT(ctypes.Structure):
+        _fields_ = [
+            ("type", ctypes.c_ulong),
+            ("ki", KEYBDINPUT),
+            ("padding", ctypes.c_ubyte * 8),
+        ]
 
-class INPUT(ctypes.Structure):
-    _fields_ = [
-        ("type", ctypes.c_ulong),
-        ("ki", KEYBDINPUT),
-        ("padding", ctypes.c_ubyte * 8),
-    ]
+    def _get_user32():
+        """Get user32 handle lazily."""
+        return ctypes.windll.user32
+else:
+    # Dummy classes for non-Windows systems to allow import
+    class KEYBDINPUT:
+        pass
 
+    class INPUT:
+        pass
 
-def _get_user32():
-    """Get user32 handle lazily to avoid AttributeError on non-Windows systems."""
-    return ctypes.windll.user32
+    def _get_user32():
+        raise RuntimeError("This functionality requires Windows")
 
 
 def _send_vk(vk_code: int) -> None:
