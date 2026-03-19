@@ -148,5 +148,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install pip-audit
 
-      - name: Run pip-audit for critical vulnerabilities
-        run: pip-audit --level critical
+      - name: Run pip-audit for all vulnerabilities
+        run: pip-audit
