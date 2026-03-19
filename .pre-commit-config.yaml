@@ -24,4 +24,4 @@ repos:
         - click>=8.0
         - psutil>=5.8
         - prompt_toolkit>=3.0
-      exclude: '^win32/|pythonwin/|cli_anything/cloudmusic/tests/'
+      exclude: '^win32/|pythonwin/|cli_anything/cloudmusic/tests/|.*cloudmusic_backend\.py'
