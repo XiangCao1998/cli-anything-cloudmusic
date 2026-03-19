@@ -90,8 +90,25 @@ This is a Windows-specific package that relies on `pywin32` for Windows API acce
 
 1. Update the README.md with details of any new features
 2. Update the CHANGELOG/DEVELOPMENT_LOG if applicable
-3. The PR can be merged once you get approval from a maintainer
-4. Follow the conventional commit format for your PR title
+3. All CI checks must pass before merging can occur
+4. The PR can be merged once you get approval from a maintainer
+5. Follow the conventional commit format for your PR title
+
+## CI Checks and Branch Protection
+
+This project enforces strict quality checks through GitHub CI:
+
+- **pre-commit**: Runs all pre-commit hooks (ruff lint, ruff format, mypy, trailing whitespace check, yaml check)
+- **lint**: Runs standalone lint, format check, and type checking
+- **test**: Runs full test matrix across Python 3.8-3.12 on both Ubuntu and Windows
+- **security**: Checks for critical dependency vulnerabilities with `pip-audit`
+
+Branch protection is enabled on the `main` branch:
+- **All CI checks must pass** before any pull request can be merged
+- **Branch must be up to date** with main before merging
+- At least one approval from a Code Owner is required
+
+This ensures that `main` always remains in a working, secure state.
 
 ## Release Process
 
