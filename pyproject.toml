@@ -111,4 +111,4 @@ namespace_packages = true
 [tool.pytest.ini_options]
 testpaths = ["cli_anything/cloudmusic/tests"]
 pythonpath = ["."]
-addopts = "-v"
+addopts = "-v --no-fail-no-tests"

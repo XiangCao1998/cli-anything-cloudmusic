@@ -149,4 +149,4 @@ jobs:
           pip install pip-audit
 
       - name: Run pip-audit for critical vulnerabilities
-        run: pip-audit -l critical
+        run: pip-audit --level critical
