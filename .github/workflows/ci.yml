@@ -113,7 +113,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          python -m pytest cli_anything/cloudmusic/tests/ --cov=cli_anything.cloudmusic --cov-report=xml --cov-report=term -v --no-fail-on-no-tests
+          python -m pytest cli_anything/cloudmusic/tests/ --cov=cli_anything.cloudmusic --cov-report=xml --cov-report=term -v
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
