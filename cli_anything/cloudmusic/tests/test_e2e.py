@@ -24,7 +24,7 @@ def _resolve_cli():
             ["where", "cli-anything-cloudmusic"], capture_output=True, text=True
         )
         if result.returncode == 0:
-            return "cli-anything-cloudmusic"
+            return ["cli-anything-cloudmusic"]
     except Exception:
         pass
 
