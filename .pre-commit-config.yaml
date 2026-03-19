@@ -22,7 +22,6 @@ repos:
     - id: mypy
       additional_dependencies:
         - click>=8.0
-        - pywin32>=300
         - psutil>=5.8
         - prompt_toolkit>=3.0
-      exclude: '^win32/|pythonwin/'
+      exclude: '^win32/|pythonwin/|cli_anything/cloudmusic/tests/'
