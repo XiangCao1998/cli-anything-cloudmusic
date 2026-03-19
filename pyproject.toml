@@ -53,7 +53,7 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["cli_anything.cloudmusic"]
 include-package-data = true
-namespace-packages = [""]
+namespace-packages = ["cli_anything"]
 
 [tool.setuptools.package-data]
 "cli_anything.cloudmusic" = ["skills/SKILL.md"]
