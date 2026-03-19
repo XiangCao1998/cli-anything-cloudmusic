@@ -72,7 +72,7 @@ jobs:
         run: ruff format --diff .
 
       - name: Run mypy type check
-        run: mypy .
+        run: mypy cli_anything/
 
   test:
     name: Test (Python ${{ matrix.python-version }}, ${{ matrix.os }})
