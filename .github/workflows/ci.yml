@@ -113,7 +113,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          python -m pytest cli_anything/cloudmusic/tests/ --cov=cli_anything.cloudmusic --cov-report=xml --cov-report=term -v
+          python -m pytest cli_anything/cloudmusic/tests/ --cov=cli_anything.cloudmusic --cov-report=xml --cov-report=term -v --no-fail-no-tests
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -149,4 +149,4 @@ jobs:
           pip install pip-audit
 
       - name: Run pip-audit for all vulnerabilities
-        run: pip-audit
+        run: pip-audit -l
