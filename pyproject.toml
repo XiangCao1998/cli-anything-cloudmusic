@@ -100,6 +100,7 @@ allow_untyped_defs = true
 exclude = [
   "win32",
   "pythonwin",
+  "cli_anything/cloudmusic/utils/cloudmusic_backend.py",
   "\\.pyc$",
   "__pycache__",
   ".*\\.egg-info",
