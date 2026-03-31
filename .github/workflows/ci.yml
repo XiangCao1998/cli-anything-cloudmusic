@@ -116,7 +116,7 @@ jobs:
           python -m pytest cli_anything/cloudmusic/tests/ --cov=cli_anything.cloudmusic --cov-report=xml --cov-report=term -v
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v6
         if: always()
         with:
           file: ./coverage.xml
